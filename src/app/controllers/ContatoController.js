@@ -1,16 +1,16 @@
 const ContatoRepository = require('../repositories/ContatoRepository');
-const ContactRepository = require('../repositories/ContatoRepository');
 
-class ContactController{
+class ContatoController{
     async index(request, response){
-        const contatos = await ContactRepository.findAll();
+        const { orderBy } = request.query;
+        const contatos = await ContatoRepository.findAll(orderBy);
         response.json(contatos);
     }
 
     async show(request, response){
         const { id } = request.params;
 
-        const contato = await ContactRepository.findById(id);
+        const contato = await ContatoRepository.findById(id);
 
         if(!contato){
             return response.status(404).json({error: 'Usuário não encontrado!'});
@@ -41,7 +41,7 @@ class ContactController{
         const { id } = request.params;
         const { nome, email, fone, id_categoria } = request.body;
 
-        const contato = await ContactRepository.findById(id);
+        const contato = await ContatoRepository.findById(id);
 
         if(!contato){
             return response.status(404).json({error: 'Usuário não encontrado!'});
@@ -67,13 +67,7 @@ class ContactController{
     async delete(request, response){
         const { id } = request.params;
 
-        const contato = await ContactRepository.findById(id);
-
-        if(!contato){
-            return response.status(404).json({error: 'Usuário não encontrado!'});
-        }
-
-        await ContactRepository.delete(id);
+        await ContatoRepository.delete(id);
 
         //204: no content
         response.sendStatus(204);
@@ -81,4 +75,4 @@ class ContactController{
 }
 
 //Singleton
-module.exports = new ContactController();
+module.exports = new ContatoController();

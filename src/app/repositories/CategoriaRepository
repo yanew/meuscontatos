@@ -2,16 +2,13 @@ const db = require('../../database/index');
 //OU const db = require('../../database'); -- se fizer assim ele já chama automaticamente o arquivo de nome "index"
 //OU const { query } = require('../../database/index'); -- se quiser desestruturar
 
-class ContactRepository{
+class CategoriaRepository{
 
     async findAll(orderBy = 'ASC'){
         const dir = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
         const rows = await db.querysql(`
-            SELECT co.id, co.nome, co.fone, co.email, ca.nome as categoria
-            FROM contato co
-            LEFT JOIN categoria ca ON ca.id = co.id_categoria
-            ORDER BY co.nome ${dir}
+            SELECT * FROM categoria ORDER BY nome ${dir}
             `);
 
         return rows;
@@ -25,20 +22,20 @@ class ContactRepository{
         return row;
     }
 
-    async findByEmail(email){
+    async findByNome(nome){
         const [row] = await db.querysql(`
             SELECT * FROM contato WHERE email like $1
-            `, [email]);
+            `, [nome]);
 
         return row;
     }
 
-    async create({ nome, email, fone, id_categoria  }){
+    async create({ nome }){
         const [row] = await db.querysql(`
-            INSERT INTO contato(nome, email, fone, id_categoria)
-            VALUES($1, $2, $3, $4)
+            INSERT INTO categoria(nome)
+            VALUES($1)
             RETURNING *`,
-            [nome, email, fone, id_categoria]);
+            [nome]);
 
             return row;
 
@@ -71,4 +68,4 @@ class ContactRepository{
 
 }
 
-module.exports = new ContactRepository()
+module.exports = new CategoriaRepository()
